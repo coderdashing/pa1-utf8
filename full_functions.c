@@ -1,3 +1,9 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <inttypes.h>
+
 uint8_t is_ascii(char string[])
 {
     // TODO: Implement is_ascii in the body of this function!
@@ -119,3 +125,29 @@ int32_t codepoint_at(char str[], int32_t byte_index) {
     }
     return -1;
 }
+int is_animal_emoji_at(const char str[], int index){
+    
+    int i = 0;
+    while(str[i] != '\0'){
+        i++;
+    }
+    char newstr[i];
+    for (int j = 0; j < i; j++){
+        newstr[j] = str[j];
+    }
+    
+    int count = 0;
+    
+    int ind = 0;
+    while(ind < i && count < index){
+        
+        ind += width_from_start_byte(str[ind]);
+        count++;
+    }
+    if(count < index){
+        return 0;
+    }
+    int32_t cp =  codepoint_at(newstr,ind);
+    return (cp >= 0x1F400 && cp <= 0x1F43F) || (cp >= 0x1F980 && cp <= 0x1F9AE);
+}
+
