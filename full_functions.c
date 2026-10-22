@@ -4,6 +4,13 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+int8_t width_from_start_byte(char c) {
+  if((c & 0x80) == 0x00) { return 1; } // ASCII = 1 byte
+  if((int)(c & 0xE0) == 0xC0) { return 2; } // 2 byte case
+  if((c & 0xF0) == 0xE0) { return 3; } // 2 byte case
+  if((c & 0xF8) == 0xF0) { return 4; } // 3 byte case
+  return -1;
+}
 uint8_t is_ascii(char string[])
 {
     // TODO: Implement is_ascii in the body of this function!
@@ -49,7 +56,7 @@ int32_t utf8_strlen(char str[]) {
         if(w < 0){
             break;
         }
-        i += width_from_start_byte(str[i]);
+        i += w;
 
         count++;
         
@@ -62,16 +69,16 @@ void utf8_substring(const char str[], int start, int end) {
     int count = 0;
     int w = 0;
     while(count < start ){
-        w = width_from_start_byte(str[i]);
+        w = (int)width_from_start_byte(str[i]);
         
-        i += width_from_start_byte(str[i]);
+        i +=  (int)width_from_start_byte(str[i]);
 
         count++;
         
     }
     while(count < end){
         
-        w = width_from_start_byte(str[i]);
+        w = (int)width_from_start_byte(str[i]);
         for (int j = 0; j < w; j++){
             
             printf("%c",str[i+j]);
@@ -83,13 +90,6 @@ void utf8_substring(const char str[], int start, int end) {
     }
     printf("\n");
 }
-int8_t width_from_start_byte(char c) {
-  if((c & 0x80) == 0x00) { return 1; } // ASCII = 1 byte
-  if((int)(c & 0xE0) == 0xC0) { return 2; } // 2 byte case
-  if((c & 0xF0) == 0xE0) { return 3; } // 2 byte case
-  if((c & 0xF8) == 0xF0) { return 4; } // 3 byte case
-  return -1;
-}
 
 int32_t codepoint_at(char str[], int32_t byte_index) {
     // TODO: Implement this function
@@ -98,13 +98,13 @@ int32_t codepoint_at(char str[], int32_t byte_index) {
     }
     int i = 0;
     while(i < byte_index){
-        i += width_from_start_byte(str[i]);
+        i += (int)width_from_start_byte(str[i]);
         if(i > byte_index){
             return -1;
         }
         
     }
-    int width = width_from_start_byte(str[i]);
+    int width = (int)width_from_start_byte(str[i]);
     if (width == 1) {
         return str[i] & 0x7F;
     }
@@ -141,7 +141,7 @@ int is_animal_emoji_at(const char str[], int index){
     int ind = 0;
     while(ind < i && count < index){
         
-        ind += width_from_start_byte(str[ind]);
+        ind += (int)width_from_start_byte(str[ind]);
         count++;
     }
     if(count < index){
@@ -150,4 +150,70 @@ int is_animal_emoji_at(const char str[], int index){
     int32_t cp =  codepoint_at(newstr,ind);
     return (cp >= 0x1F400 && cp <= 0x1F43F) || (cp >= 0x1F980 && cp <= 0x1F9AE);
 }
+int main()
+{
+        // TODO: Read lines from stdin in a loop
+        // Each line contains two strings separated by a space
+        // Parse the two strings from each line
+        // Call string_cap_match and print "match" or "miss"
+        char buffer[201];
+    char r1[100];
+    char r2[100];
+    int i1;
+    int i2;
+    int mainind;
+    int ind2;
+	mainind = 0;
+	printf("Enter a UTF-8 encoded string: ");		
+    char *scan1 = fgets(buffer,sizeof(buffer),stdin);
+    while(scan1 == NULL){
+    	printf("\nEnter a UTF-8 encoded string: ");
+		char *scan1 = fgets(buffer,sizeof(buffer),stdin);
+    
+	}
 
+        i1 = 0;
+        i2 = 0;
+        ind2 = 0;
+
+    printf("\nValid ascii: ");
+	if(is_ascii(scan1)){
+		printf(" true\n");
+	}
+	else{
+		printf(" false\n");
+	}
+	char temp[100];
+	int i = 0;
+	while(scan1[i] != '\0'){
+		temp[i] = scan1[i];
+		i++;
+	}
+	temp[i] = '\0';
+	capitalize_ascii(temp);
+	printf("Uppercased ASCII: \"");
+	for(int j = 0; j < i-1; j++){
+		printf("%c",temp[j]);
+	}
+
+    printf("%c\"\nLength in bytes: %d\n",temp[i],(int)strlen(scan1)-1);
+	printf("Number of codepoints: %d\n",utf8_strlen(scan1)-1);
+    i = 0;
+	int count = 0;
+	int w = 0;
+	printf("Bytes per code point: ");
+    while(scan1[i] != '\0' ){//add condition to check for str's length or out of bounds
+        w = width_from_start_byte(scan1[i]);
+        if(w < 0){
+            break;
+        }
+		printf("%d ",w);
+        i += w;
+
+        count++;
+
+    }
+  	printf("\nSubstring of the first 6 code points: ");
+	utf8_substring(scan1,0,6);
+	return 0;
+};
