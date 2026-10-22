@@ -171,7 +171,8 @@ int main()
 		char *scan1 = fgets(buffer,sizeof(buffer),stdin);
     
 	}
-
+	scan1[strlen(scan1)-1] = '\0';
+	printf("test ing what %sis",scan1);
         i1 = 0;
         i2 = 0;
         ind2 = 0;
@@ -196,8 +197,8 @@ int main()
 		printf("%c",temp[j]);
 	}
 
-    printf("%c\"\nLength in bytes: %d\n",temp[i],(int)strlen(scan1)-1);
-	printf("Number of codepoints: %d\n",utf8_strlen(scan1)-1);
+    printf("%c\"\nLength in bytes: %d\n",temp[i],(int)strlen(scan1));
+	printf("Number of codepoints: %d\n",(int)utf8_strlen(scan1));
     i = 0;
 	int count = 0;
 	int w = 0;
