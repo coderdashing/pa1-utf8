@@ -164,20 +164,21 @@ int main()
     int mainind;
     int ind2;
 	mainind = 0;
+	char *scan1;
+
 	printf("Enter a UTF-8 encoded string: ");		
-    char *scan1 = fgets(buffer,sizeof(buffer),stdin);
+    scan1 = fgets(buffer,sizeof(buffer),stdin);
     while(scan1 == NULL){
     	printf("\nEnter a UTF-8 encoded string: ");
-		char *scan1 = fgets(buffer,sizeof(buffer),stdin);
+		scan1 = fgets(buffer,sizeof(buffer),stdin);
     
 	}
 	scan1[strlen(scan1)-1] = '\0';
-	printf("test ing what %sis",scan1);
         i1 = 0;
         i2 = 0;
         ind2 = 0;
 
-    printf("\nValid ascii: ");
+    printf("Valid ascii: ");
 	if(is_ascii(scan1)){
 		printf(" true\n");
 	}
@@ -197,7 +198,7 @@ int main()
 		printf("%c",temp[j]);
 	}
 
-    printf("%c\"\nLength in bytes: %d\n",temp[i],(int)strlen(scan1));
+    printf("%c\"\nLength in bytes: %d\n",temp[i-1],(int)strlen(scan1));
 	printf("Number of codepoints: %d\n",(int)utf8_strlen(scan1));
     i = 0;
 	int count = 0;
@@ -211,10 +212,40 @@ int main()
 		printf("%d ",w);
         i += w;
 
-        count++;
+    
 
     }
   	printf("\nSubstring of the first 6 code points: ");
 	utf8_substring(scan1,0,6);
+	printf("Code points as decimal numbers:");
+	i = 0;
+	w = 0;
+	while(scan1[i] != '\0'){
+		w = width_from_start_byte(scan1[i]);
+		if(w < 0){
+			break;
+		}
+		printf(" %d",codepoint_at(scan1,(int32_t)i));
+		i += w;
+		
+	}
+	printf("\nAnimal emojis: ");
+    i = 0;
+  
+    w = 0;
+	while(scan1[i] != '\0'){
+        w = width_from_start_byte(scan1[i]);
+        if(w < 0){
+			break;
+        }
+        if(is_animal_emoji_at(scan1,(int32_t)count) == 1){
+			for(int j = 0; j < w; j++){
+				printf("%c",scan1[i+j]);
+			}
+		}
+        i += w;
+		count++;
+    }
+
 	return 0;
 };
