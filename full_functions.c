@@ -80,6 +80,7 @@ void utf8_substring(const char str[], int start, int end,char result[]) {
     //Implement utf8_substring in the body of this function!
     if(start < 0){
 		result[0] = '\0';
+		return;
 	}
 	if(end < start){
 		result[0] = '\0';
