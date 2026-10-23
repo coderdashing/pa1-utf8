@@ -11,7 +11,7 @@ int8_t width_from_start_byte(char c) {
   if((c & 0xF8) == 0xF0) { return 4; } // 3 byte case
   return -1;
 }
-uint8_t is_ascii(char string[])
+int8_t is_ascii(char string[])
 {
     // TODO: Implement is_ascii in the body of this function!
     int i = 0;
@@ -39,6 +39,9 @@ int32_t capitalize_ascii(char str[])
 
 }
 int8_t codepoint_size(char string[]) {
+	if(strlen(string) == 0){
+		return -1;
+	}
     if ((string[0] & 0b10000000) == 0b00000000) return 1;
     if ((string[0] & 0b11100000) == 0b11000000) return 2;
     if ((string[0] & 0b11110000) == 0b11100000) return 3;
@@ -47,12 +50,18 @@ int8_t codepoint_size(char string[]) {
 }
 int32_t utf8_strlen(char str[]) {
     // TODO: Implement this function
+	if(str[0] == '\0'){
+		return -1;
+	}
 
     int i = 0;
     int count = 0;
     int w = 0;
     while(str[i] != '\0' ){//add condition to check for str's length or out of bounds
-        w = width_from_start_byte(str[i]);
+        if(str[i] == 0xfe || str[i] == 0xff || str[i] == 0xc1 || str[i] == 0xc0 || (str[i] >= 0xf5 && str[i] <= 0xff) || str[i] == 0xa0 || str[i] == 0xa4){
+			return -1;
+		}
+		w = width_from_start_byte(str[i]);
         if(w < 0){
             break;
         }
@@ -63,12 +72,17 @@ int32_t utf8_strlen(char str[]) {
     }
     return count;
 }
-void utf8_substring(const char str[], int start, int end) {
+void utf8_substring(const char str[], int start, int end,char result[]) {
     //Implement utf8_substring in the body of this function!
-        int i = 0;
+    if(end < start){
+
+		return;
+	}
+	
+	int i = 0;
     int count = 0;
     int w = 0;
-    while(str[i] != '\0' && count < start ){
+    while((str[i] != 0) && (count < start) ){
         w = (int)width_from_start_byte(str[i]);
         
         i +=  (int)width_from_start_byte(str[i]);
@@ -76,19 +90,20 @@ void utf8_substring(const char str[], int start, int end) {
         count++;
         
     }
-    while(str[i] != '\0' && count < end){
+    while((str[i] != 0) && (count < end)){
         
         w = (int)width_from_start_byte(str[i]);
         for (int j = 0; j < w; j++){
             
-            printf("%c",str[i+j]);
+            result[i+j] = str[i+j];
             
         }
         
         i += w;
         count++;
     }
-    printf("\n");
+	result[i] = '\0';
+    
 }
 
 int32_t codepoint_at(char str[], int32_t byte_index) {
@@ -97,6 +112,9 @@ int32_t codepoint_at(char str[], int32_t byte_index) {
 	if(byte_index < 0){
         return -1;
     }
+	if(byte_index >= strlen(str)){
+		return -1;
+	}
     int i = 0;
     while(i < byte_index){
         i += (int)width_from_start_byte(str[i]);
@@ -152,7 +170,12 @@ int is_animal_emoji_at(const char str[], int index){
     return (cp >= 0x1F400 && cp <= 0x1F43F) || (cp >= 0x1F980 && cp <= 0x1F9AE);
 }
 void next_utf8_char(char str[], int32_t cpi, char result[]){
+	
 	int32_t source = codepoint_at(str,cpi) + 1;
+	if(source == 0){
+
+		return;
+	}
 	//subject to change
 	//possibilities:
 	//ascii: 8 bits
@@ -204,17 +227,16 @@ int main()
 
 	printf("Enter a UTF-8 encoded string: ");		
     scan1 = fgets(buffer,sizeof(buffer),stdin);
-    while(scan1 == NULL){
-    	printf("\nEnter a UTF-8 encoded string: ");
-		scan1 = fgets(buffer,sizeof(buffer),stdin);
-    
+
+	if(scan1[strlen(scan1)-1] == '\n'){
+		scan1[strlen(scan1)-1] = '\0';
+
 	}
-	scan1[strlen(scan1)-1] = '\0';
         i1 = 0;
         i2 = 0;
         ind2 = 0;
 
-    printf("\nValid ascii: ");
+    printf("Valid ascii: ");
 	if(is_ascii(scan1)){
 		printf(" true\n");
 	}
@@ -252,7 +274,8 @@ int main()
 
     }
   	printf("\nSubstring of the first 6 code points: ");
-	utf8_substring(scan1,0,6);
+	utf8_substring(scan1,0,6,temp);
+	printf("%s\n",temp);
 	printf("Code points as decimal numbers:");
 	i = 0;
 	w = 0;
