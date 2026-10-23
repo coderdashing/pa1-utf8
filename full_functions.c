@@ -40,7 +40,7 @@ int32_t capitalize_ascii(char str[])
 }
 int8_t codepoint_size(char string[]) {
 	if(string == ""){
-		return -1;
+		return 0;
 	}
     if ((string[0] & 0b10000000) == 0b00000000) return 1;
     if ((string[0] & 0b11100000) == 0b11000000) return 2;
@@ -50,8 +50,9 @@ int8_t codepoint_size(char string[]) {
 }
 int32_t utf8_strlen(char str[]) {
     // TODO: Implement this function
+	
 	if(str[0] == '\0'){
-		return -1;
+		return 0;
 	}
 
     int i = 0;
@@ -62,6 +63,9 @@ int32_t utf8_strlen(char str[]) {
 			return -1;
 		}
 		w = width_from_start_byte(str[i]);
+		if(w == -1){
+			return -1;
+		}
         if(w < 0){
             break;
         }
@@ -75,7 +79,7 @@ int32_t utf8_strlen(char str[]) {
 void utf8_substring(const char str[], int start, int end,char result[]) {
     //Implement utf8_substring in the body of this function!
     if(end < start){
-
+		result[0] = '\0';
 		return;
 	}
 	
@@ -103,7 +107,7 @@ void utf8_substring(const char str[], int start, int end,char result[]) {
         i += w;
         count++;
     }
-	result[i] = '\0';
+	result[i-mark] = '\0';
     
 }
 
@@ -239,10 +243,10 @@ int main()
 
     printf("\nValid ascii: ");
 	if(is_ascii(scan1)){
-		printf(" true\n");
+		printf("true\n");
 	}
 	else{
-		printf(" false\n");
+		printf("false\n");
 	}
 	char temp[100];
 	int i = 0;
@@ -258,7 +262,7 @@ int main()
 	}
 
     printf("%c\"\nLength in bytes: %d\n",temp[i-1],(int)strlen(scan1));
-	printf("Number of codepoints: %d\n",(int)utf8_strlen(scan1) - 1);
+	printf("Number of codepoints: %d\n",(int)utf8_strlen(scan1));
     i = 0;
 	int count = 0;
 	int w = 0;
