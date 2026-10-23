@@ -39,7 +39,7 @@ int32_t capitalize_ascii(char str[])
 
 }
 int8_t codepoint_size(char string[]) {
-	if(string == ""){
+	if(string[0] == '\0'){
 		return 0;
 	}
     if ((string[0] & 0b10000000) == 0b00000000) return 1;
@@ -241,12 +241,12 @@ int main()
         i2 = 0;
         ind2 = 0;
 
-    printf("\nValid ascii: ");
+    printf("\nValid ASCII: ");
 	if(is_ascii(scan1)){
 		printf("true\n");
 	}
 	else{
-		printf("false\n");
+		printf("falsei\n");
 	}
 	char temp[100];
 	int i = 0;
@@ -262,7 +262,7 @@ int main()
 	}
 
     printf("%c\"\nLength in bytes: %d\n",temp[i-1],(int)strlen(scan1));
-	printf("Number of codepoints: %d\n",(int)utf8_strlen(scan1));
+	printf("Number of code points: %d\n",(int)utf8_strlen(scan1));
     i = 0;
 	int count = 0;
 	int w = 0;
