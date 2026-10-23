@@ -39,7 +39,7 @@ int32_t capitalize_ascii(char str[])
 
 }
 int8_t codepoint_size(char string[]) {
-	if((int)strlen(string) == 0 || sizeof('') == 0){
+	if(string == ""){
 		return -1;
 	}
     if ((string[0] & 0b10000000) == 0b00000000) return 1;
