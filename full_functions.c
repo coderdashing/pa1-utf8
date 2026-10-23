@@ -68,7 +68,7 @@ void utf8_substring(const char str[], int start, int end) {
         int i = 0;
     int count = 0;
     int w = 0;
-    while(count < start ){
+    while(str[i] != '\0' && count < start ){
         w = (int)width_from_start_byte(str[i]);
         
         i +=  (int)width_from_start_byte(str[i]);
@@ -76,7 +76,7 @@ void utf8_substring(const char str[], int start, int end) {
         count++;
         
     }
-    while(count < end){
+    while(str[i] != '\0' && count < end){
         
         w = (int)width_from_start_byte(str[i]);
         for (int j = 0; j < w; j++){
@@ -93,7 +93,8 @@ void utf8_substring(const char str[], int start, int end) {
 
 int32_t codepoint_at(char str[], int32_t byte_index) {
     // TODO: Implement this function
-    if(byte_index < 0){
+    
+	if(byte_index < 0){
         return -1;
     }
     int i = 0;
@@ -150,6 +151,41 @@ int is_animal_emoji_at(const char str[], int index){
     int32_t cp =  codepoint_at(newstr,ind);
     return (cp >= 0x1F400 && cp <= 0x1F43F) || (cp >= 0x1F980 && cp <= 0x1F9AE);
 }
+void next_utf8_char(char str[], int32_t cpi, char result[]){
+	int32_t source = codepoint_at(str,cpi) + 1;
+	//subject to change
+	//possibilities:
+	//ascii: 8 bits
+	//2: 11 bits or 6 + 5 < 1000 0000 0000
+	//3: 16 bits or 6 + 6 + 4 < 0x10000
+	//
+	//4: 21 bits or 6 + 6 + 6 + 3 0010 0000 0000 0000 0000 0000
+	if((int) source < 128){
+		result[0] = source;
+		result[1] = '\0';
+	}
+	else if(source < 0x800){
+		result[0] = ((source >> 6) & 0x1F) | 0xC0;
+		result[1] = (source & 0x3F) | 0x80;
+		result[2] = '\0';
+	}
+	else if(source < 0x10000){
+		result[0] = ((source >> 12) & 0xF) | 0xE0;
+		result[1] = ((source >> 6) & 0x3F) | 0x80;
+		result[2] = (source & 0x3F) | 0x80;
+		result[3] = '\0';
+	}
+	else if(source < 0x200000){
+		result[0] = ((source >> 18) & 0x7) | 0xF0;
+		result[1] = ((source >> 12) & 0x3F) | 0x80;
+		result[2] = ((source >> 6) & 0x3F) | 0x80;
+		result[3] = (source & 0x3F) | 0x80;
+		result[4] = '\0';
+	}
+	else{
+		result[0] = '\0';
+	}
+}
 int main()
 {
         // TODO: Read lines from stdin in a loop
@@ -178,7 +214,7 @@ int main()
         i2 = 0;
         ind2 = 0;
 
-    printf("Valid ascii: ");
+    printf("\nValid ascii: ");
 	if(is_ascii(scan1)){
 		printf(" true\n");
 	}
@@ -246,6 +282,12 @@ int main()
         i += w;
 		count++;
     }
-
+	printf("\nNext character of code point at index 3:");
+	char res[4];
+	if(count >= 4){
+		next_utf8_char(scan1,3,res);
+		printf("%s",res);
+	}
+	printf("\n");
 	return 0;
 };
