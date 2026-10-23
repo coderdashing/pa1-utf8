@@ -78,7 +78,10 @@ int32_t utf8_strlen(char str[]) {
 }
 void utf8_substring(const char str[], int start, int end,char result[]) {
     //Implement utf8_substring in the body of this function!
-    if(end < start){
+    if(start < 0){
+		result[0] = '\0';
+	}
+	if(end < start){
 		result[0] = '\0';
 		return;
 	}
@@ -246,7 +249,7 @@ int main()
 		printf("true\n");
 	}
 	else{
-		printf("falsei\n");
+		printf("false\n");
 	}
 	char temp[100];
 	int i = 0;
