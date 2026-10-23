@@ -39,7 +39,7 @@ int32_t capitalize_ascii(char str[])
 
 }
 int8_t codepoint_size(char string[]) {
-	if(strlen(string) == 0){
+	if((int)strlen(string) == 0 || sizeof('') == 0){
 		return -1;
 	}
     if ((string[0] & 0b10000000) == 0b00000000) return 1;
@@ -90,12 +90,13 @@ void utf8_substring(const char str[], int start, int end,char result[]) {
         count++;
         
     }
+	int mark = i;
     while((str[i] != 0) && (count < end)){
         
         w = (int)width_from_start_byte(str[i]);
         for (int j = 0; j < w; j++){
             
-            result[i+j] = str[i+j];
+            result[i+j - mark] = str[i+j];
             
         }
         
@@ -236,7 +237,7 @@ int main()
         i2 = 0;
         ind2 = 0;
 
-    printf("Valid ascii: ");
+    printf("\nValid ascii: ");
 	if(is_ascii(scan1)){
 		printf(" true\n");
 	}
@@ -257,7 +258,7 @@ int main()
 	}
 
     printf("%c\"\nLength in bytes: %d\n",temp[i-1],(int)strlen(scan1));
-	printf("Number of codepoints: %d\n",(int)utf8_strlen(scan1));
+	printf("Number of codepoints: %d\n",(int)utf8_strlen(scan1) - 1);
     i = 0;
 	int count = 0;
 	int w = 0;
