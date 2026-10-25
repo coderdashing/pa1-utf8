@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
@@ -121,9 +120,6 @@ int32_t codepoint_at(char str[], int32_t byte_index) {
 	if(byte_index < 0){
         return -1;
     }
-	if(byte_index >= strlen(str)){
-		return -1;
-	}
     int i = 0;
     while(i < byte_index){
         i += (int)width_from_start_byte(str[i]);
@@ -185,13 +181,6 @@ void next_utf8_char(char str[], int32_t cpi, char result[]){
 
 		return;
 	}
-	//subject to change
-	//possibilities:
-	//ascii: 8 bits
-	//2: 11 bits or 6 + 5 < 1000 0000 0000
-	//3: 16 bits or 6 + 6 + 4 < 0x10000
-	//
-	//4: 21 bits or 6 + 6 + 6 + 3 0010 0000 0000 0000 0000 0000
 	if((int) source < 128){
 		result[0] = source;
 		result[1] = '\0';
@@ -233,13 +222,15 @@ int main()
     int ind2;
 	mainind = 0;
 	char *scan1;
-
+	int size = 0;
 	printf("Enter a UTF-8 encoded string: ");		
     scan1 = fgets(buffer,sizeof(buffer),stdin);
-
-	if(scan1[strlen(scan1)-1] == '\n'){
-		scan1[strlen(scan1)-1] = '\0';
-
+	while(scan1[size] != '\0'){
+		size++;
+	}
+	if(scan1[size-1] == '\n'){
+		scan1[size-1] = '\0';
+		size--;
 	}
         i1 = 0;
         i2 = 0;
@@ -265,7 +256,7 @@ int main()
 		printf("%c",temp[j]);
 	}
 
-    printf("%c\"\nLength in bytes: %d\n",temp[i-1],(int)strlen(scan1));
+    printf("%c\"\nLength in bytes: %d\n",temp[i-1],size);
 	printf("Number of code points: %d\n",(int)utf8_strlen(scan1));
     i = 0;
 	int count = 0;
@@ -288,7 +279,7 @@ int main()
 	printf("Code points as decimal numbers:");
 	i = 0;
 	w = 0;
-	while(scan1[i] != '\0'){
+	while(i < size){
 		w = width_from_start_byte(scan1[i]);
 		if(w < 0){
 			break;
@@ -301,7 +292,7 @@ int main()
     i = 0;
   
     w = 0;
-	while(scan1[i] != '\0'){
+	while(i < size){
         w = width_from_start_byte(scan1[i]);
         if(w < 0){
 			break;
