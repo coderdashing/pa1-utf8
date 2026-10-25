@@ -117,7 +117,7 @@ void utf8_substring(const char str[], int start, int end,char result[]) {
 int32_t codepoint_at(char str[], int32_t byte_index) {
     // TODO: Implement this function
     
-	if(byte_index < 0){
+	if(byte_index < 0|| str[0] == '\0'){
         return -1;
     }
     int i = 0;
