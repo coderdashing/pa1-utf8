@@ -122,6 +122,9 @@ int32_t codepoint_at(char str[], int32_t byte_index) {
     }
     int i = 0;
     while(i < byte_index){
+		if(str[i] == '\0'){
+			return -1;
+		}
         i += (int)width_from_start_byte(str[i]);
         if(i > byte_index){
             return -1;
